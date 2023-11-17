@@ -9,7 +9,17 @@ from aiogram.enums import ParseMode
 
 from app.http.client.commands import start
 from database.app import db
-from database.migrations import user
+from database.migrations import \
+    user, \
+    wallets, \
+    achievements, \
+    bonuses, \
+    lottery, \
+    payments, \
+    promo_codes, \
+    promo_code_users, \
+    say_hi, \
+    statistic
 
 
 TOKEN = config.TOKEN
@@ -29,17 +39,19 @@ async def on_startup():
 
 async def on_shutdown():
     await db.pop_bind().close()
+    print('PostgreSQL CLOSE')
 
 
 async def main() -> None:
     try:
+        result: bool = await bot.delete_webhook(drop_pending_updates=True)
         dp.include_routers(start.router)
-
         dp.startup.register(on_startup)
 
         await dp.start_polling(bot)
 
     except KeyboardInterrupt:
+        await on_shutdown()
         logging.info("Bot has been stopped")
 
 
