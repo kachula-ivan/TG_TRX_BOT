@@ -6,9 +6,12 @@ import config
 
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
-
-from app.http.client.commands import start
 from database.app import db
+
+from app.http.client.commands import \
+    start, \
+    help
+
 from database.migrations import \
     user, \
     wallets, \
@@ -45,7 +48,12 @@ async def on_shutdown():
 async def main() -> None:
     try:
         result: bool = await bot.delete_webhook(drop_pending_updates=True)
-        dp.include_routers(start.router)
+
+        dp.include_routers(
+            start.router,
+            help.router
+        )
+
         dp.startup.register(on_startup)
 
         await dp.start_polling(bot)
